@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Entrar - ITF</title>
+  <link rel='stylesheet' href='css/style.css'>
+</head>
+<body>
+  <div class='screen estreita'> <!-- estreita: no PC fica uma caixa pequena no centro -->
+    <div class='topo'> <!-- cabeçalho escuro -->
+      <h1 class='titulo-tela'>Entrar no ITF</h1> <!-- título -->
+      <p class='texto-claro'>Acompanhe a transparência financeira do seu clube.</p> <!-- frase de apoio -->
+    </div>
+    <div class='form'> <!-- área dos campos -->
+      <input id='email' class='campo' type='email' placeholder='Seu e-mail'> <!-- campo de e-mail; o id permite achá-lo no JavaScript -->
+      <input id='senha' class='campo' type='password' placeholder='Senha (mínimo 6 caracteres)'> <!-- type password esconde as letras -->
+      <button class='btn' onclick='entrar()'>Entrar</button> <!-- ao clicar, roda a função entrar() -->
+      <button class='btn btn-sec' onclick='cadastrar()'>Criar conta</button> <!-- ao clicar, roda cadastrar() -->
+    </div>
+  </div>
+
+  <script src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'></script> <!-- biblioteca do Supabase -->
+  <script src='js/supabase.js'></script> <!-- sua conexão -->
+  <script>
+    // Se a pessoa já está logada, pula direto para a Home
+    (async () => {
+      const { data } = await db.auth.getSession(); // confere a sessão
+      if (data.session) window.location.href = 'home.html'; // já logado: vai para a Home
+    })();
+
+    async function entrar() { // roda ao clicar em Entrar
+      const email = document.getElementById('email').value; // lê o e-mail digitado
+      const senha = document.getElementById('senha').value; // lê a senha digitada
+      const { error } = await db.auth.signInWithPassword({ email, password: senha }); // pede ao Supabase para conferir
+      if (error) return alert('E-mail ou senha incorretos'); // erro: avisa e para
+      window.location.href = 'home.html'; // deu certo: vai para a Home
+    }
+
+    async function cadastrar() { // roda ao clicar em Criar conta
+      const email = document.getElementById('email').value; // lê o e-mail
+      const senha = document.getElementById('senha').value; // lê a senha
+      const { error } = await db.auth.signUp({ email, password: senha, options: { data: { nome: email.split('@')[0] } } }); // cria a conta; o nome é a parte do e-mail antes do @
+      if (error) return alert(error.message); // erro (ex.: senha curta): mostra a mensagem
+      window.location.href = 'home.html'; // conta criada: vai para a Home
+    }
+  </script>
+</body>
+</html>

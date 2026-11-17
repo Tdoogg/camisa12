@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Alertas - ITF</title>
+  <link rel='stylesheet' href='css/style.css'>
+</head>
+<body>
+  <div class='screen media'>
+    <div class='topo-claro'><h1 class='titulo-tela'>🔔 Alertas</h1></div>
+    <div class='chips'> <!-- data-tipo é o filtro; vazio = todos -->
+      <span class='chip ativo' data-tipo=''>Todos</span>
+      <span class='chip' data-tipo='financeiro'>Financeiro</span>
+      <span class='chip' data-tipo='governanca'>Governança</span>
+      <span class='chip' data-tipo='outros'>Outros</span>
+    </div>
+    <div id='lista'></div>
+  </div>
+  <nav id='menu'></nav>
+
+  <script src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'></script>
+  <script src='js/supabase.js'></script>
+  <script src='js/data.js'></script>
+  <script>
+    const simbolos = { vermelho: '!', amarelo: '!', verde: '✓', azul: 'i' }; // símbolo dentro de cada bolinha colorida
+
+    function mostrar(tipo) { // desenha a lista, filtrando pelo tipo
+      const filtrados = alertas.filter(a => !tipo || a.tipo === tipo); // mantém só os alertas do tipo (ou todos, se vazio)
+      document.getElementById('lista').innerHTML = filtrados.map(a => `<div class='alerta'><div class='bolinha ${a.cor}'>${simbolos[a.cor]}</div><div><div>${a.texto}</div><small>${a.quando}</small></div></div>`).join(''); // um bloco por alerta
+    }
+
+    async function iniciar() {
+      const sessao = await exigirLogin();
+      if (!sessao) return;
+      menuInferior('alertas'); // menu com Alertas em verde
+      document.querySelectorAll('.chip').forEach(chip => {
+        chip.onclick = () => {
+          document.querySelectorAll('.chip').forEach(c => c.classList.remove('ativo'));
+          chip.classList.add('ativo');
+          mostrar(chip.dataset.tipo); // aplica o filtro
+        };
+      });
+      mostrar(''); // começa mostrando todos
+    }
+    iniciar();
+  </script>
+</body>
+</html>

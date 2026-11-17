@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Início - ITF</title>
+  <link rel='stylesheet' href='css/style.css'>
+</head>
+<body>
+  <div class='screen'>
+    <div class='ola'> <!-- linha de saudação -->
+      <div>
+        <h1 id='ola' class='titulo-tela'>Olá!</h1> <!-- o JavaScript troca pelo nome do usuário -->
+        <p class='texto' style='padding:0'>Acompanhe a transparência do seu clube e explore outros times.</p>
+      </div>
+      <span>🔔</span> <!-- sino -->
+    </div>
+    <div style='padding:0 20px 8px'><input id='busca' class='busca' placeholder='Buscar um clube...'></div> <!-- busca: Enter leva à tela de clubes -->
+    <div class='grade'> <!-- no celular empilha; no PC vira 2 colunas -->
+      <div> <!-- coluna da esquerda -->
+        <div class='card-clube' id='meu'></div> <!-- cartão Seu clube (preenchido pelo JS) -->
+        <div class='faixa' onclick='explicar()'><span>Como o ITF é calculado?</span><span>›</span></div> <!-- faixa clicável -->
+        <div class='pilares' id='pilares'></div> <!-- 5 pilares (preenchidos pelo JS) -->
+      </div>
+      <div> <!-- coluna da direita -->
+        <div class='secao'><h2>Comparativo da liga</h2><a href='comparativo.html'>Ver todos ›</a></div>
+        <div id='lista'></div> <!-- ranking (preenchido pelo JS) -->
+      </div>
+    </div>
+  </div>
+  <nav id='menu'></nav> <!-- menu (criado pelo JS) -->
+
+  <script src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'></script>
+  <script src='js/supabase.js'></script>
+  <script src='js/data.js'></script>
+  <script>
+    async function iniciar() { // função principal da página
+      const sessao = await exigirLogin(); // confere se está logado
+      if (!sessao) return; // sem login: para aqui
+      menuInferior('home'); // desenha o menu com Início em verde
+      const meta = sessao.user.user_metadata || {}; // dados extras do usuário
+      document.getElementById('ola').textContent = 'Olá, ' + (meta.nome || 'torcedor') + '!'; // saudação com o nome
+
+      const { data: meu } = await db.from('clubes').select('*').eq('meu_clube', true).single(); // busca o clube com meu_clube = true
+      const s = selo(meu.itf); // etiqueta da nota
+      document.getElementById('meu').innerHTML = `<div class='escudo grande'>${inicial(meu.nome)}</div><div><div>Seu clube</div><div class='nota-grande'>${meu.itf}<small>/100</small></div><span class='selo ${s.classe}'>${s.texto} transparência</span></div>`; // monta o cartão
+
+      document.getElementById('pilares').innerHTML = pilares.map(p => `<div class='pilar'><div class='bola'>${p.icone}</div>${p.nome}<strong style='color:${corNota(p.nota)}'>${p.nota}/100</strong></div>`).join(''); // um bloco por pilar (dados do data.js)
+
+      const { data: top } = await db.from('clubes').select('*').order('itf', { ascending: false }).limit(5); // 5 maiores notas
+      document.getElementById('lista').innerHTML = top.map((c, i) => `<div class='linha ${c.meu_clube ? 'destaque' : ''}'><span class='pos'>${i + 1}</span><div class='escudo pequeno'>${inicial(c.nome)}</div><span class='nome'>${c.nome}</span><strong>${c.itf}</strong></div>`).join(''); // uma linha por clube
+    }
+
+    function explicar() { // roda ao clicar na faixa
+      alert('O ITF é uma nota de 0 a 100 feita com 5 pilares: receitas, despesas, dívida, salários e governança.');
+    }
+
+    document.getElementById('busca').addEventListener('keydown', e => { // quando uma tecla é apertada na busca...
+      if (e.key === 'Enter') window.location.href = 'clubes.html?busca=' + encodeURIComponent(e.target.value); // ...se for Enter, abre a lista já filtrada
+    });
+
+    iniciar(); // roda a função principal ao abrir a página
+  </script>
+</body>
+</html>

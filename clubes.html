@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Clubes - ITF</title>
+  <link rel='stylesheet' href='css/style.css'>
+</head>
+<body>
+  <div class='screen'>
+    <div class='topo-claro'><h1 class='titulo-tela'>Explore os clubes</h1></div>
+    <div style='padding:0 20px'><input id='busca' class='busca' placeholder='Buscar um clube...'></div>
+    <div class='chips'> <!-- filtros; data-cat guarda a categoria de cada um -->
+      <span class='chip ativo' data-cat=''>Todos</span>
+      <span class='chip' data-cat='grande'>Grandes</span>
+      <span class='chip' data-cat='medio'>Médios</span>
+      <span class='chip' data-cat='pequeno'>Pequenos</span>
+    </div>
+    <div id='lista' class='lista-grade'></div> <!-- lista (preenchida pelo JS) -->
+  </div>
+  <nav id='menu'></nav>
+
+  <script src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'></script>
+  <script src='js/supabase.js'></script>
+  <script>
+    let categoria = ''; // filtro atual de categoria (vazio = todos)
+    let texto = new URLSearchParams(location.search).get('busca') || ''; // texto da busca, vindo do endereço (?busca=...)
+
+    async function carregar() { // busca os clubes e desenha a lista
+      let consulta = db.from('clubes').select('*').order('itf', { ascending: false }); // todos, da maior nota para a menor
+      if (categoria) consulta = consulta.eq('categoria', categoria); // filtra pela categoria escolhida
+      if (texto) consulta = consulta.ilike('nome', '%' + texto + '%'); // filtra pelo texto (o % significa qualquer coisa antes ou depois)
+      const { data } = await consulta; // executa a consulta
+      const lista = document.getElementById('lista'); // acha a caixa da lista
+      if (!data || data.length === 0) { // se não achou nenhum clube...
+        lista.innerHTML = `<p class='texto' style='padding:20px'>Nenhum clube encontrado.</p>`; // ...avisa
+        return; // e para
+      }
+      lista.innerHTML = data.map(c => { // cria um bloco para cada clube
+        const s = selo(c.itf); // etiqueta da nota
+        return `<div class='item-clube ${c.meu_clube ? 'destaque' : ''}' onclick='abrir(${c.id})'><div class='escudo'>${inicial(c.nome)}</div><div class='info'><strong>${c.nome}</strong><small>${c.cidade} - ${c.estado}</small></div><div class='nota'>${c.itf}</div><span class='selo ${s.classe}'>${s.texto}</span></div>`;
+      }).join('');
+    }
+
+    function abrir(id) { window.location.href = 'clube.html?id=' + id; } // abre o detalhe do clube clicado
+
+    async function iniciar() {
+      const sessao = await exigirLogin(); // confere o login
+      if (!sessao) return;
+      menuInferior('clubes'); // menu com Clubes em verde
+      document.getElementById('busca').value = texto; // mostra no campo o texto que veio da Home
+      document.getElementById('busca').oninput = e => { texto = e.target.value; carregar(); }; // a cada letra digitada, busca de novo
+      document.querySelectorAll('.chip').forEach(chip => { // para cada filtro...
+        chip.onclick = () => { // ...ao clicar:
+          document.querySelectorAll('.chip').forEach(c => c.classList.remove('ativo')); // tira o verde de todos
+          chip.classList.add('ativo'); // deixa só o clicado verde
+          categoria = chip.dataset.cat; // guarda a categoria
+          carregar(); // atualiza a lista
+        };
+      });
+      carregar(); // primeira carga da lista
+    }
+    iniciar();
+  </script>
+</body>
+</html>

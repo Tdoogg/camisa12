@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Comparativo - ITF</title>
+  <link rel='stylesheet' href='css/style.css'>
+</head>
+<body>
+  <div class='screen media'> <!-- media: no PC fica numa caixa de largura média -->
+    <div class='topo-claro'>
+      <span class='voltar' onclick='history.back()'>←</span> <!-- volta para a página anterior -->
+      <h1 class='titulo-tela'>Comparativo entre clubes</h1>
+    </div>
+    <div class='chips'>
+      <span class='chip ativo' data-cat=''>Todos</span>
+      <span class='chip' data-cat='grande'>Grandes</span>
+      <span class='chip' data-cat='medio'>Médios</span>
+      <span class='chip' data-cat='pequeno'>Pequenos</span>
+    </div>
+    <div id='lista'></div>
+    <div class='info-box'>Veja como seu clube se compara aos outros times e entenda o que pode melhorar.</div>
+  </div>
+  <nav id='menu'></nav>
+
+  <script src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'></script>
+  <script src='js/supabase.js'></script>
+  <script>
+    let categoria = ''; // filtro atual
+
+    async function carregar() {
+      let consulta = db.from('clubes').select('*').order('itf', { ascending: false }); // todos, do maior para o menor
+      if (categoria) consulta = consulta.eq('categoria', categoria); // aplica o filtro, se houver
+      const { data } = await consulta;
+      document.getElementById('lista').innerHTML = data.map((c, i) => `<div class='linha ${c.meu_clube ? 'destaque' : ''}'><span class='pos'>${i + 1}</span><div class='escudo pequeno'>${inicial(c.nome)}</div><span class='nome-fixo'>${c.nome}</span><div class='barra'><i style='width:${c.itf}%;background:${corNota(c.itf)}'></i></div><strong>${c.itf}</strong></div>`).join(''); // a largura da barra é a própria nota (em %)
+    }
+
+    async function iniciar() {
+      const sessao = await exigirLogin();
+      if (!sessao) return;
+      menuInferior('clubes');
+      document.querySelectorAll('.chip').forEach(chip => {
+        chip.onclick = () => {
+          document.querySelectorAll('.chip').forEach(c => c.classList.remove('ativo'));
+          chip.classList.add('ativo');
+          categoria = chip.dataset.cat;
+          carregar();
+        };
+      });
+      carregar();
+    }
+    iniciar();
+  </script>
+</body>
+</html>

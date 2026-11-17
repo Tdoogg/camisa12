@@ -1,0 +1,138 @@
+/* ===== BASE ===== */
+* { box-sizing: border-box; } /* padding e borda contam dentro da largura: evita caixas estourando */
+:root { /* variáveis (apelidos) de cor que valem para o app inteiro */
+  --fundo-escuro: #0A2A26; /* fundo escuro */
+  --verde-escuro: #0F3D36; /* verde dos cabeçalhos */
+  --verde: #22A55A; /* verde principal */
+  --verde-vivo: #3DD68C; /* verde brilhante para destaques no escuro */
+  --verde-claro: #E3F5EA; /* verde clarinho de fundos */
+  --texto: #17302B; /* cor padrão do texto */
+  --cinza: #6B7C78; /* texto secundário */
+  --amarelo: #F5B82E; /* aviso */
+  --laranja: #F08A3C; /* atenção */
+  --vermelho: #E5575A; /* alerta */
+  --azul: #4A7BD0; /* informação */
+}
+body { margin: 0; font-family: system-ui, sans-serif; background: #DDE5E3; color: var(--texto); } /* sem margem; fonte do aparelho; fundo cinza fora do app; texto na cor padrão */
+a { color: inherit; text-decoration: none; } /* links herdam a cor do texto e perdem o sublinhado */
+h1, h2, h3, p { margin: 0; } /* tira as margens automáticas dos títulos e parágrafos */
+.screen { max-width: 390px; min-height: 100vh; margin: 0 auto; background: #fff; position: relative; padding-bottom: 90px; } /* no celular: caixa de até 390px, centralizada, com espaço embaixo para o menu */
+.grade { display: block; } /* no celular, os blocos ficam um embaixo do outro */
+.lista-grade { display: block; } /* no celular, a lista tem 1 coluna */
+
+/* ===== MENU (embaixo no celular) ===== */
+.nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 390px; display: flex; justify-content: space-around; background: #fff; border-top: 1px solid #E5ECEA; padding: 10px 0 14px; z-index: 10; } /* barra presa embaixo da tela, com os itens espalhados */
+.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--cinza); } /* cada item: ícone em cima, texto embaixo */
+.nav a .ico { font-size: 20px; } /* tamanho do ícone */
+.nav a.ativo { color: var(--verde); font-weight: 700; } /* item da tela atual fica verde e negrito */
+
+/* ===== TELA INICIAL (splash) ===== */
+.splash { min-height: 100vh; max-width: 390px; margin: 0 auto; padding: 40px 28px; background: linear-gradient(180deg, #0F3D36 0%, #0A2A26 60%, #061A17 100%); color: #fff; display: flex; flex-direction: column; justify-content: space-between; } /* tela escura inteira; flex em coluna espalha logo, texto e botões de cima para baixo */
+.logo { display: flex; align-items: flex-end; gap: 12px; } /* barrinhas e texto lado a lado */
+.logo-barras { display: flex; align-items: flex-end; gap: 5px; } /* 3 barrinhas apoiadas na base */
+.logo-barras span { width: 10px; background: var(--verde-vivo); border-radius: 2px; } /* aparência de cada barrinha */
+.logo-barras span:nth-child(1) { height: 18px; } /* 1ª barra: baixa */
+.logo-barras span:nth-child(2) { height: 30px; } /* 2ª barra: média */
+.logo-barras span:nth-child(3) { height: 44px; } /* 3ª barra: alta */
+.logo-texto { font-size: 56px; font-weight: 800; line-height: 1; } /* letras ITF grandes, negrito, sem espaço extra */
+.logo-sub { color: #CFE0DC; font-size: 14px; margin-top: 6px; } /* nome por extenso, pequeno */
+.splash-titulo { font-size: 36px; font-weight: 700; line-height: 1.15; margin: 0 0 16px; } /* título grande com 16px de espaço embaixo */
+.destaque-verde { color: var(--verde-vivo); } /* deixa a segunda frase verde */
+.splash-texto { color: #C5D6D2; font-size: 14px; line-height: 1.5; } /* parágrafo explicativo */
+
+/* ===== BOTÕES E FORMULÁRIO ===== */
+.btn { display: block; width: 100%; border: none; cursor: pointer; font-family: inherit; text-align: center; background: var(--verde); color: #fff; padding: 16px; border-radius: 30px; font-size: 16px; font-weight: 600; } /* botão verde principal: largura toda, bem arredondado (serve para link e para button) */
+.btn-sec { background: #fff; color: var(--verde); border: 2px solid var(--verde); margin-top: 12px; } /* botão secundário de contorno verde */
+.link-claro { display: block; text-align: center; color: #C5D6D2; margin-top: 18px; font-size: 14px; } /* link discreto da splash */
+.form { padding: 24px 28px; } /* área dos campos de login */
+.campo { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #D5DEDB; border-radius: 12px; font-size: 15px; } /* campo de texto com borda fina e cantos arredondados */
+
+/* ===== CABEÇALHOS E TEXTOS ===== */
+.topo { background: linear-gradient(180deg, #0F3D36, #0A2A26); color: #fff; padding: 26px 20px; } /* cabeçalho escuro */
+.topo-claro { padding: 22px 20px 10px; } /* cabeçalho de fundo branco */
+.titulo-tela { font-size: 22px; font-weight: 700; } /* título de cada tela */
+.voltar { display: inline-block; font-size: 24px; margin-bottom: 6px; cursor: pointer; } /* seta de voltar */
+.texto { padding: 0 20px; font-size: 14px; line-height: 1.5; color: var(--cinza); } /* parágrafo de apoio */
+.texto-claro { color: #C5D6D2; font-size: 14px; margin-top: 6px; } /* texto de apoio sobre fundo escuro */
+.ola { display: flex; justify-content: space-between; align-items: center; padding: 22px 20px 12px; } /* linha com saudação e sino */
+.busca { width: 100%; padding: 12px 14px; border: none; border-radius: 12px; background: #EEF2F1; font-size: 14px; } /* campo de busca cinza claro */
+.secao { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px 6px; } /* título de seção com link à direita */
+.secao h2 { font-size: 16px; } /* tamanho do título da seção */
+.secao a { color: var(--verde); font-size: 13px; font-weight: 600; } /* link verde da seção */
+
+/* ===== SELOS E CHIPS ===== */
+.selo { display: inline-block; border-radius: 12px; padding: 4px 10px; font-size: 12px; font-weight: 600; } /* etiqueta arredondada de nota */
+.selo.verde { background: #D6F2E0; color: #1B7F46; } /* selo verde */
+.selo.amarelo { background: #FDEFC9; color: #A66F00; } /* selo amarelo */
+.selo.vermelho { background: #FADCDD; color: #B3363A; } /* selo vermelho */
+.chips { display: flex; gap: 8px; padding: 10px 20px; overflow-x: auto; } /* linha de filtros que rola de lado se faltar espaço */
+.chip { border: 1px solid #D5DEDB; border-radius: 20px; padding: 8px 16px; background: #fff; font-size: 14px; white-space: nowrap; cursor: pointer; } /* botãozinho de filtro */
+.chip.ativo { background: var(--verde); color: #fff; border-color: var(--verde); } /* filtro selecionado fica verde */
+
+/* ===== CARDS E ESCUDOS ===== */
+.escudo { width: 46px; height: 46px; border-radius: 50%; background: var(--verde); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; } /* círculo verde com a inicial do clube */
+.escudo.grande { width: 64px; height: 64px; font-size: 24px; } /* versão grande */
+.escudo.pequeno { width: 30px; height: 30px; font-size: 13px; } /* versão pequena */
+.card-clube { margin: 12px 20px; background: linear-gradient(135deg, #0F3D36, #14524A); color: #fff; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 14px; } /* cartão verde escuro do Seu clube */
+.nota-grande { font-size: 38px; font-weight: 800; color: var(--verde-vivo); line-height: 1; } /* nota grande */
+.nota-grande small { font-size: 14px; color: #CFE0DC; font-weight: 500; } /* o /100 menor ao lado */
+.faixa { margin: 4px 20px; padding: 14px 16px; background: #EEF4F2; border-radius: 12px; display: flex; justify-content: space-between; font-size: 14px; cursor: pointer; } /* faixa clicável Como o ITF é calculado */
+.pilares { display: flex; justify-content: space-between; padding: 16px 20px 6px; } /* linha dos 5 pilares */
+.pilar { text-align: center; font-size: 11px; color: var(--cinza); } /* cada pilar */
+.pilar .bola { width: 44px; height: 44px; border-radius: 12px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: var(--verde-claro); } /* quadradinho com o emoji */
+.pilar strong { display: block; font-size: 13px; } /* nota do pilar */
+.caixa { background: #fff; border: 1px solid #E5ECEA; border-radius: 14px; padding: 16px; margin-bottom: 14px; } /* caixa branca com borda fina */
+.caixa h3 { font-size: 15px; margin-bottom: 8px; } /* título da caixa */
+.info-box { margin: 16px 20px; padding: 14px; background: #EEF4F2; border-radius: 12px; font-size: 13px; color: var(--cinza); line-height: 1.4; } /* caixa informativa cinza-esverdeada */
+
+/* ===== LISTAS ===== */
+.linha { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #F0F4F3; font-size: 14px; } /* linha de ranking */
+.linha.destaque { background: var(--verde-claro); } /* linha do seu clube */
+.linha .pos { width: 18px; color: var(--cinza); } /* posição no ranking */
+.linha .nome { flex: 1; } /* nome ocupa o espaço que sobrar */
+.nome-fixo { width: 84px; font-size: 13px; } /* nome com largura fixa (para alinhar as barras) */
+.item-clube { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #F0F4F3; cursor: pointer; } /* linha da lista de clubes */
+.item-clube.destaque { background: var(--verde-claro); } /* seu clube em verde clarinho */
+.item-clube .info { flex: 1; } /* nome e cidade ocupam o espaço que sobrar */
+.item-clube .info small { display: block; color: var(--cinza); margin-top: 2px; } /* cidade abaixo do nome */
+.item-clube .nota { font-size: 20px; font-weight: 800; color: var(--verde); } /* nota do clube */
+.barra { flex: 1; height: 8px; background: #E9EFED; border-radius: 4px; overflow: hidden; } /* trilho cinza da barra */
+.barra i { display: block; height: 100%; border-radius: 4px; } /* parte colorida da barra (a largura vem do HTML) */
+
+/* ===== TELA DO CLUBE, ABAS E FINANCEIRO ===== */
+.hero { background: linear-gradient(180deg, #0F3D36, #0A2A26); color: #fff; padding: 18px 20px 22px; } /* cabeçalho escuro do clube */
+.linha-topo { display: flex; align-items: center; gap: 14px; } /* escudo e textos lado a lado */
+.abas { display: flex; border-bottom: 1px solid #E5ECEA; } /* barra de abas */
+.aba { flex: 1; text-align: center; padding: 14px 0; font-size: 14px; color: var(--cinza); cursor: pointer; } /* cada aba */
+.aba.ativa { color: var(--verde); font-weight: 700; border-bottom: 3px solid var(--verde); } /* aba selecionada */
+.painel { display: none; padding: 16px 20px; } /* painéis começam escondidos */
+.painel.ativo { display: block; } /* o painel ativo aparece */
+.total { font-size: 28px; font-weight: 800; margin-top: 4px; } /* valor total grande */
+.variacao { color: var(--verde); font-weight: 600; font-size: 13px; margin-bottom: 10px; } /* variação em verde */
+
+/* ===== ALERTAS E PERFIL ===== */
+.alerta { display: flex; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #F0F4F3; font-size: 14px; line-height: 1.4; } /* um alerta da lista */
+.alerta small { display: block; color: var(--cinza); margin-top: 4px; } /* tempo do alerta */
+.bolinha { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; } /* círculo colorido do ícone */
+.bolinha.vermelho { background: var(--vermelho); } /* alerta vermelho */
+.bolinha.amarelo { background: var(--amarelo); } /* alerta amarelo */
+.bolinha.verde { background: var(--verde); } /* alerta verde */
+.bolinha.azul { background: var(--azul); } /* alerta azul */
+.perfil-topo { background: linear-gradient(180deg, #0F3D36, #0A2A26); color: #fff; padding: 26px 20px; display: flex; align-items: center; gap: 14px; } /* topo escuro do perfil */
+.menu-item { display: flex; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #F0F4F3; font-size: 15px; cursor: pointer; } /* item do menu do perfil */
+
+/* ===== RESPONSIVO: PC (telas com 900px ou mais de largura) ===== */
+@media (min-width: 900px) { /* tudo aqui dentro só vale em telas largas; no celular é ignorado */
+  .screen { max-width: 1100px; margin: 80px auto 30px; padding-bottom: 0; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,.12); } /* o app vira um painel largo e centralizado, com espaço em cima para o menu */
+  .screen.media { max-width: 800px; } /* versão média (alertas e comparativo) */
+  .screen.estreita { max-width: 520px; margin-top: 60px; } /* versão estreita (login e perfil) */
+  .nav { top: 0; bottom: auto; left: 0; transform: none; max-width: none; justify-content: flex-end; gap: 34px; padding: 16px 40px; border-top: none; border-bottom: 1px solid #E5ECEA; } /* o menu sobe para o topo e ocupa a largura toda */
+  .nav::before { content: 'ITF'; margin-right: auto; font-size: 22px; font-weight: 800; color: var(--verde); } /* escreve a marca ITF à esquerda do menu */
+  .nav a { flex-direction: row; gap: 8px; font-size: 15px; } /* ícone e texto lado a lado */
+  .grade { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 20px 28px; align-items: start; } /* os blocos ficam em 2 colunas */
+  .lista-grade { display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; padding: 0 28px; } /* a lista de clubes fica em 2 colunas */
+  .splash { max-width: 1100px; min-height: calc(100vh - 60px); margin: 30px auto; padding: 70px 90px; border-radius: 24px; } /* a splash vira um painel largo */
+  .splash > div { max-width: 560px; } /* limita a largura dos textos para ficarem legíveis */
+  .splash-titulo { font-size: 52px; } /* título maior */
+  .topo, .hero, .perfil-topo { padding-left: 40px; padding-right: 40px; } /* mais espaço nas laterais dos cabeçalhos */
+}

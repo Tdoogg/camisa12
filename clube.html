@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Clube - ITF</title>
+  <link rel='stylesheet' href='css/style.css'>
+</head>
+<body>
+  <div class='screen'>
+    <div class='hero'> <!-- cabeçalho escuro -->
+      <span class='voltar' onclick='history.back()'>←</span>
+      <div class='linha-topo' id='hero'></div> <!-- escudo, nome e nota (preenchido pelo JS) -->
+    </div>
+    <div class='abas'> <!-- data-alvo diz qual painel a aba mostra -->
+      <div class='aba ativa' data-alvo='visao'>Visão geral</div>
+      <div class='aba' data-alvo='fin'>Financeiro</div>
+      <div class='aba' data-alvo='hist'>Histórico</div>
+    </div>
+
+    <div id='visao' class='painel ativo'> <!-- painel 1: começa visível -->
+      <div class='grade' style='padding:0'>
+        <div>
+          <div class='caixa'><h3>Resumo do ITF</h3><p class='texto' style='padding:0' id='resumo'></p></div>
+          <div class='caixa'><h3>Destaques</h3><p class='texto' style='padding:0'>Receitas cresceram 12% no último ano.</p></div>
+        </div>
+        <div class='caixa'><h3>Evolução do ITF</h3><div style='height:220px'><canvas id='grafico'></canvas></div></div> <!-- o gráfico é desenhado dentro do canvas -->
+      </div>
+    </div>
+    <div id='fin' class='painel'> <!-- painel 2: começa escondido -->
+      <div class='caixa' id='pilares-lista'></div>
+      <a class='btn' href='financeiro.html'>Ver detalhes financeiros</a>
+    </div>
+    <div id='hist' class='painel'> <!-- painel 3: começa escondido -->
+      <div class='caixa' id='hist-lista'></div>
+    </div>
+  </div>
+  <nav id='menu'></nav>
+
+  <script src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'></script>
+  <script src='https://cdn.jsdelivr.net/npm/chart.js'></script> <!-- biblioteca de gráficos -->
+  <script src='js/supabase.js'></script>
+  <script src='js/data.js'></script>
+  <script>
+    async function iniciar() {
+      const sessao = await exigirLogin(); // confere o login
+      if (!sessao) return;
+      menuInferior('clubes'); // menu com Clubes em verde
+      const id = new URLSearchParams(location.search).get('id'); // pega o id do endereço
+      let consulta = db.from('clubes').select('*'); // começa a consulta
+      consulta = id ? consulta.eq('id', id) : consulta.eq('meu_clube', true); // com id: aquele clube; sem id: o seu clube
+      const { data: c } = await consulta.single(); // traz uma única linha
+      const s = selo(c.itf); // etiqueta da nota
+
+      document.getElementById('hero').innerHTML = `<div class='escudo grande'>${inicial(c.nome)}</div><div><h1 class='titulo-tela'>${c.nome}</h1><p class='texto-claro' style='margin:2px 0 8px'>${c.cidade} - ${c.estado}</p><div class='nota-grande'>${c.itf}<small>/100</small></div><span class='selo ${s.classe}'>${s.texto} transparência</span></div>`; // cabeçalho do clube
+
+      document.getElementById('resumo').textContent = 'O clube apresenta ' + s.texto.toLowerCase() + ' transparência financeira, com pontos de atenção na gestão de despesas e no nível de endividamento.'; // texto do resumo
+
+      document.getElementById('pilares-lista').innerHTML = pilares.map(p => `<div class='linha'><span class='nome-fixo'>${p.nome}</span><div class='barra'><i style='width:${p.nota}%;background:${corNota(p.nota)}'></i></div><strong>${p.nota}</strong></div>`).join(''); // aba Financeiro: uma barra por pilar
+
+      const valores = evolucao.valores.slice(0, -1).concat(c.itf); // troca o último valor pela nota real do clube
+      document.getElementById('hist-lista').innerHTML = evolucao.labels.map((m, i) => `<div class='linha'><span class='nome'>${m}</span><strong>${valores[i]}</strong></div>`).join(''); // aba Histórico: mês e nota
+
+      new Chart(document.getElementById('grafico'), { // desenha o gráfico de linha
+        type: 'line', // tipo: linha
+        data: { labels: evolucao.labels, datasets: [{ data: valores, borderColor: '#22A55A', backgroundColor: 'rgba(34,165,90,.15)', fill: true, tension: 0.3 }] }, // meses, notas, cor verde, área preenchida, linha levemente curva
+        options: { maintainAspectRatio: false, plugins: { legend: { display: false } } } // se ajusta à altura da caixa; sem legenda
+      });
+
+      document.querySelectorAll('.aba').forEach(aba => { // para cada aba...
+        aba.onclick = () => { // ...ao clicar:
+          document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa')); // desmarca todas
+          document.querySelectorAll('.painel').forEach(p => p.classList.remove('ativo')); // esconde todos os painéis
+          aba.classList.add('ativa'); // marca a clicada
+          document.getElementById(aba.dataset.alvo).classList.add('ativo'); // mostra o painel dela
+        };
+      });
+    }
+    iniciar();
+  </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Financeiro - ITF</title>
+  <link rel='stylesheet' href='css/style.css'>
+</head>
+<body>
+  <div class='screen'>
+    <div class='topo-claro'>
+      <span class='voltar' onclick='history.back()'>←</span>
+      <h1 class='titulo-tela'>Detalhes financeiros</h1>
+    </div>
+    <div class='chips'> <!-- data-chave aponta para o dado em data.js -->
+      <span class='chip ativo' data-chave='receitas'>Receitas</span>
+      <span class='chip' data-chave='despesas'>Despesas</span>
+      <span class='chip' data-chave='divida'>Dívida</span>
+      <span class='chip' data-chave='salarios'>Salários</span>
+    </div>
+    <div class='grade'>
+      <div class='caixa'>
+        <div class='texto' style='padding:0' id='titulo'></div> <!-- título da aba -->
+        <div class='total' id='total'></div> <!-- valor total -->
+        <div class='variacao' id='variacao'></div> <!-- variação -->
+        <div style='height:220px'><canvas id='barras'></canvas></div> <!-- gráfico de barras -->
+      </div>
+      <div>
+        <div class='caixa' id='box-fontes'> <!-- só aparece na aba Receitas -->
+          <h3>Principais fontes de receita</h3>
+          <div style='height:220px'><canvas id='rosca'></canvas></div> <!-- gráfico de rosca -->
+        </div>
+        <div class='info-box' style='margin:0'>As receitas de bilheteria aumentaram 23% no último ano, impulsionadas pela média de público.</div>
+      </div>
+    </div>
+  </div>
+  <nav id='menu'></nav>
+
+  <script src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'></script>
+  <script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
+  <script src='js/supabase.js'></script>
+  <script src='js/data.js'></script>
+  <script>
+    let grafBarras = null; // guarda o gráfico de barras atual, para poder trocar
+
+    function mostrar(chave) { // desenha a aba escolhida
+      const d = financeiro[chave]; // pega os dados dela no data.js
+      document.getElementById('titulo').textContent = d.titulo; // escreve o título
+      document.getElementById('total').textContent = d.total; // escreve o total
+      document.getElementById('variacao').textContent = d.variacao; // escreve a variação
+      if (grafBarras) grafBarras.destroy(); // apaga o gráfico antigo
+      grafBarras = new Chart(document.getElementById('barras'), { // cria o novo gráfico
+        type: 'bar', // tipo: barras
+        data: { labels: anos, datasets: [{ data: d.valores, backgroundColor: '#22A55A' }] }, // anos embaixo; valores em verde
+        options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+      });
+      document.getElementById('box-fontes').style.display = chave === 'receitas' ? 'block' : 'none'; // mostra a rosca só na aba Receitas
+    }
+
+    async function iniciar() {
+      const sessao = await exigirLogin();
+      if (!sessao) return;
+      menuInferior('clubes');
+      new Chart(document.getElementById('rosca'), { // cria a rosca uma única vez
+        type: 'doughnut', // tipo: rosca
+        data: { labels: fontesReceita.labels, datasets: [{ data: fontesReceita.valores, backgroundColor: ['#22A55A', '#F5B82E', '#B7791F', '#4A7BD0'] }] }, // fatias e cores
+        options: { maintainAspectRatio: false }
+      });
+      document.querySelectorAll('.chip').forEach(chip => {
+        chip.onclick = () => {
+          document.querySelectorAll('.chip').forEach(c => c.classList.remove('ativo'));
+          chip.classList.add('ativo');
+          mostrar(chip.dataset.chave); // troca a aba
+        };
+      });
+      mostrar('receitas'); // começa na aba Receitas
+    }
+    iniciar();
+  </script>
+</body>
+</html>

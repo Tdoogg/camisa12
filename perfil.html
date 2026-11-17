@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Perfil - ITF</title>
+  <link rel='stylesheet' href='css/style.css'>
+</head>
+<body>
+  <div class='screen estreita'>
+    <div class='perfil-topo'> <!-- topo escuro com avatar e nome -->
+      <div class='escudo grande' id='avatar'>T</div>
+      <div><h2 id='nome'>Torcedor</h2><p class='texto-claro' id='email'></p></div>
+    </div>
+    <div class='card-clube' id='meu'></div> <!-- cartão do seu clube -->
+    <div class='menu-item' onclick='emBreve()'><span>Meus clubes favoritos</span><span>›</span></div> <!-- demonstrativo -->
+    <a class='menu-item' href='comparativo.html'><span>Comparativo</span><span>›</span></a> <!-- abre o comparativo -->
+    <div class='menu-item' onclick='emBreve()'><span>Notícias e análises</span><span>›</span></div>
+    <div class='menu-item' onclick='emBreve()'><span>Configurações</span><span>›</span></div>
+    <div class='menu-item' onclick='emBreve()'><span>Sobre o ITF</span><span>›</span></div>
+    <div class='menu-item' onclick='sair()'><span>Sair</span><span>›</span></div> <!-- encerra a sessão -->
+    <div class='info-box'>Juntos por clubes mais transparentes e um futebol mais forte.</div>
+  </div>
+  <nav id='menu'></nav>
+
+  <script src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'></script>
+  <script src='js/supabase.js'></script>
+  <script>
+    function emBreve() { alert('Em breve! Esta função é demonstrativa.'); } // aviso dos itens ainda não feitos
+
+    async function iniciar() {
+      const sessao = await exigirLogin();
+      if (!sessao) return;
+      menuInferior('perfil'); // menu com Perfil em verde
+      const meta = sessao.user.user_metadata || {}; // dados extras do usuário
+      const nome = meta.nome || 'Torcedor'; // nome (ou Torcedor, se não houver)
+      document.getElementById('nome').textContent = nome; // escreve o nome
+      document.getElementById('email').textContent = sessao.user.email; // escreve o e-mail
+      document.getElementById('avatar').textContent = nome.charAt(0).toUpperCase(); // inicial no avatar
+      const { data: meu } = await db.from('clubes').select('*').eq('meu_clube', true).single(); // seu clube
+      const s = selo(meu.itf);
+      document.getElementById('meu').innerHTML = `<div class='escudo grande'>${inicial(meu.nome)}</div><div><div>Meu clube</div><div class='nota-grande'>${meu.itf}<small>/100</small></div><span class='selo ${s.classe}'>${s.texto} transparência</span></div>`;
+    }
+    iniciar();
+  </script>
+</body>
+</html>
